@@ -31,7 +31,7 @@ jobs:
           grep -E "uses-(permission|feature)" android/app/src/main/AndroidManifest.xml
       - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
-      - name: Ganti nama APK
+      - name: TAPAK
         run: cp android/app/build/outputs/apk/debug/app-debug.apk TAPAK-v1.0.apk
       - uses: actions/upload-artifact@v7
         with:
