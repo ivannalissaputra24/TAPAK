@@ -97,6 +97,11 @@ package.json                        Daftar dependensi
 - APK ditandatangani dengan kunci **debug**, cukup untuk dibagikan internal, tetapi bukan untuk Play Store.
 - Belum diuji pada semua merek dan versi Android. Uji di beberapa HP sebelum dipakai luas.
 
+## 6. Disclaimer
+
+```
+Sebagian kode sumber aplikasi ini telah melalui proses _refactoring_ dengan bantuan Claude AI, berdasarkan prompt dan instruksi yang ditentukan oleh pengembang, dengan menggunakan kode sumber awal yang dikembangkan secara mandiri sebagai bahan masukan.
+
 ## 7. Lisensi dan Atribusi
 
 Peta dasar online: © kontributor OpenStreetMap, OpenTopoMap, dan Esri. Library pihak ketiga memakai lisensi masing-masing (Leaflet BSD-2, pdf.js Apache-2.0, proj4 MIT, JSZip MIT/GPLv3, piexifjs MIT, shp-write BSD). Tentukan lisensi TAPAK sendiri sesuai kebijakan organisasi Anda.
