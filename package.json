@@ -1,0 +1,4 @@
+{"name":"peta-patroli","version":"1.0.0","private":true,
+"scripts":{"prepare-www":"node prepare.js"},
+"dependencies":{"@capacitor/core":"^6.1.2","@capacitor/cli":"^6.1.2","@capacitor/android":"^6.1.2","@capacitor/geolocation":"^6.0.1","@capacitor/filesystem":"^6.0.1","@capacitor/share":"^6.0.2",
+"leaflet":"1.9.4","pdfjs-dist":"3.11.174","proj4":"2.9.2","jszip":"3.10.1","piexifjs":"1.0.6","@mapbox/shp-write":"0.4.3"}}
