@@ -39,10 +39,18 @@ function area(c){let a=0;const R=6378137,r=Math.PI/180;for(let i=0;i<c.length;i+
 function brg(a,b){const r=Math.PI/180,dl=(b[1]-a[1])*r,y=Math.sin(dl)*Math.cos(b[0]*r),x=Math.cos(a[0]*r)*Math.sin(b[0]*r)-Math.sin(a[0]*r)*Math.cos(b[0]*r)*Math.cos(dl);return(Math.atan2(y,x)/r+360)%360}
 const card=d=>['U','TL','T','TG','S','BD','B','BL'][Math.round(d/45)%8];
 // ---------- GPS, kompas, HUD ----------
+let gpsMsg='Mencari GPS… (pastikan di area terbuka)';
 async function startGPS(){const G=C&&C.Plugins&&C.Plugins.Geolocation;
- const cb=p=>{if(!p)return;fix={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,hd:p.coords.heading,sp:p.coords.speed,t:Date.now()};onFix()};
- if(G&&native){try{await G.requestPermissions()}catch(e){}G.watchPosition({enableHighAccuracy:true},(p,e)=>cb(p))}
- else if(navigator.geolocation)navigator.geolocation.watchPosition(cb,()=>{},{enableHighAccuracy:true})}
+ const cb=p=>{if(!p)return;fix={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,hd:p.coords.heading,sp:p.coords.speed,t:Date.now()};kv.set('last',fix);onFix()};
+ if(G&&native){
+  try{let st=await G.checkPermissions();
+   if(st.location!=='granted'&&st.coarseLocation!=='granted')st=await G.requestPermissions({permissions:['location']});
+   if(st.location!=='granted'&&st.coarseLocation!=='granted'){gpsMsg='Izin lokasi ditolak. Buka Pengaturan HP > Aplikasi > Peta Patroli > Izin > Lokasi > pilih "Izinkan" + "Gunakan lokasi presisi"';hud();return}
+   if(st.location!=='granted')gpsMsg='Lokasi hanya "perkiraan". Aktifkan "Gunakan lokasi presisi" di Pengaturan > Izin.';
+  }catch(e){}
+  G.getCurrentPosition({enableHighAccuracy:false,timeout:15000,maximumAge:600000}).then(cb).catch(()=>{});
+  G.watchPosition({enableHighAccuracy:true,timeout:30000,maximumAge:5000},(p,e)=>{if(p)cb(p);else if(e&&!fix){gpsMsg='GPS belum mendapat sinyal. Pastikan Lokasi HP aktif & berada di area terbuka.';hud()}})
+ }else if(navigator.geolocation)navigator.geolocation.watchPosition(cb,()=>{},{enableHighAccuracy:true})}
 let gm,gc,tgl;
 function onFix(){const ll=[fix.lat,fix.lon];
  if(!gm){gm=L.circleMarker(ll,{radius:8,color:'#fff',weight:3,fillColor:'#2563eb',fillOpacity:1}).addTo(GL);gc=L.circle(ll,{radius:fix.acc,weight:1,interpolate:0}).addTo(GL)}
@@ -52,7 +60,7 @@ function onFix(){const ll=[fix.lat,fix.lon];
  if(target){if(tgl)map.removeLayer(tgl);tgl=L.polyline([ll,[target.lat,target.lon]],{color:'#f59e0b',dashArray:'6'}).addTo(map)}
  hud()}
 function hud(){let h='';
- if(fix)h+=`📍 ${fmt(fix.lat,fix.lon)} ±${fix.acc.toFixed(0)}m`;else h+='Mencari GPS…';
+ if(fix)h+=`📍 ${fmt(fix.lat,fix.lon)} ±${fix.acc.toFixed(0)}m`;else h+=gpsMsg;
  if(target&&fix){const d=map.distance([fix.lat,fix.lon],[target.lat,target.lon]);h+=`<br>🎯 ${esc(target.name)}: ${fd(d)}, arah ${brg([fix.lat,fix.lon],[target.lat,target.lon]).toFixed(0)}° ${card(brg([fix.lat,fix.lon],[target.lat,target.lon]))} <a onclick="target=null;if(tgl)map.removeLayer(tgl);hud()">[x]</a>`}
  if(pick)h+=`<br>📌 ${fmt(pick.lat,pick.lng)}<br><button class=p onclick="navigator.clipboard&&navigator.clipboard.writeText('${pick.lat.toFixed(6)}, ${pick.lng.toFixed(6)}');toast('Disalin')">Salin</button><button class=p onclick="newF('Point',[[pick.lng,pick.lat]])">+Titik</button><button class=p onclick="setTarget(pick.lat,pick.lng,'Titik pilihan')">Navigasi</button>`;
  $('#hud').innerHTML=h}
@@ -181,4 +189,4 @@ async function expSHP(){if(!window.shpwrite)return toast('Modul SHP tidak termua
  try{const b64=await shpwrite.zip(gj(true),{folder:'patroli',types:{point:'titik',polygon:'poligon',line:'garis'}}),z=await JSZip.loadAsync(b64,{base64:true});
  F.forEach(f=>f.photos.forEach(p=>z.file('patroli/foto/'+p.name,p.data.split(',')[1],{base64:true})));out('patroli_shp.zip',await z.generateAsync({type:'blob'}))}catch(e){toast('SHP gagal: '+e.message)}}
 // ---------- start ----------
-(async()=>{S={...S,...(await kv.get('S')||{})};F=await kv.get('F')||[];PM=await kv.get('PM')||[];setBase(S.base);draw();PM.forEach(showPM);startGPS();hud()})();
+(async()=>{S={...S,...(await kv.get('S')||{})};F=await kv.get('F')||[];const last=await kv.get('last');if(last){fix={...last,t:0};map.setView([last.lat,last.lon],14);gpsMsg='Posisi terakhir diketahui; menunggu GPS…'}PM=await kv.get('PM')||[];setBase(S.base);draw();PM.forEach(showPM);startGPS();hud()})();
