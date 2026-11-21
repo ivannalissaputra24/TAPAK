@@ -3,7 +3,7 @@
 **Teknologi Akuisisi dan Pencatatan Hutan Kita**
 *Every Track Tells a Story.*
 
-Aplikasi Android untuk pemetaan, navigasi, dan pencatatan lapangan yang bekerja tanpa internet. Dirancang untuk patroli dan pemantauan hutan berbasis masyarakat, khususnya hutan desa.
+Aplikasi Android untuk pemetaan, navigasi, dan pencatatan lapangan yang bekerja tanpa internet.
 
 ---
 
