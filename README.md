@@ -99,7 +99,6 @@ package.json                        Daftar dependensi
 
 ## 6. Disclaimer
 
-```
 Sebagian kode sumber aplikasi ini telah melalui proses _refactoring_ dengan bantuan Claude AI, berdasarkan prompt dan instruksi yang ditentukan oleh pengembang, dengan menggunakan kode sumber awal yang dikembangkan secara mandiri sebagai bahan masukan.
 
 ## 7. Lisensi dan Atribusi
