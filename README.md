@@ -15,8 +15,8 @@ Aplikasi Android untuk pemetaan, navigasi, dan pencatatan lapangan yang bekerja 
 | **Kepanjangan** | Teknologi Akuisisi dan Pencatatan Hutan Kita |
 | **Tagline** | Every Track Tells a Story. |
 | **Versi** | 1.0 |
-| **ID aplikasi** | `id.tapak.patroli` (jangan diubah setelah APK dibagikan) |
-| **Platform** | Android (APK, dipasang langsung tanpa Play Store) |
+| **ID aplikasi** | `id.tapak.patroli` |
+| **Platform** | Android |
 | **Bahasa antarmuka** | Indonesia |
 
 TAPAK dibuat sebagai alternatif ringan untuk aplikasi peta lapangan berbayar. Aplikasi ini memakai peta PDF berreferensi geografis (GeoPDF), misalnya hasil ekspor ArcMap atau QGIS, sebagai peta dasar saat tidak ada sinyal. Data yang dikumpulkan tersimpan di HP dan dapat diekspor ke format standar GIS.
@@ -39,9 +39,9 @@ TAPAK dibuat sebagai alternatif ringan untuk aplikasi peta lapangan berbayar. Ap
 
 **Kerangka aplikasi**
 - Aplikasi web (HTML, CSS, JavaScript tanpa framework) yang dibungkus menjadi APK dengan **Capacitor 6**.
-- Build APK otomatis di **GitHub Actions** (Ubuntu, Java 17 Temurin, Gradle). Tidak perlu Android Studio.
+- Build APK otomatis di **GitHub Actions** (Ubuntu, Java 17 Temurin, Gradle).
 
-**Package Capacitor**
+**Package Capacitor (versi TAPAK 1.0)**
 | Package | Versi | Fungsi |
 |---|---|---|
 | `@capacitor/core`, `cli`, `android` | ^6.1.2 | Pembungkus aplikasi menjadi APK |
@@ -50,7 +50,7 @@ TAPAK dibuat sebagai alternatif ringan untuk aplikasi peta lapangan berbayar. Ap
 | `@capacitor/share` | ^6.0.2 | Membagikan berkas ekspor |
 | `@capacitor/assets` | terbaru (saat build) | Membuat ikon dan splash Android |
 
-**Library peta dan data** (disalin ke `www/lib` saat build agar jalan offline)
+**Library peta dan data (versi TAPAK 1.0)** (disalin ke `www/lib` saat build agar jalan offline)
 | Library | Versi | Fungsi |
 |---|---|---|
 | Leaflet | 1.9.4 | Mesin peta |
@@ -64,18 +64,7 @@ TAPAK dibuat sebagai alternatif ringan untuk aplikasi peta lapangan berbayar. Ap
 
 **Izin Android:** lokasi (presisi dan perkiraan), kamera, baca foto, dan internet. Izin ditulis otomatis ke AndroidManifest oleh workflow build.
 
-## 4. Cara Membuat APK
-
-1. Buat repository baru di GitHub, lalu upload semua isi proyek ini. Pastikan folder `.github/workflows`, `assets`, dan `www` ikut.
-   Jika `.github` tidak ikut terunggah, buat lewat **Add file → Create new file** dengan nama `.github/workflows/build.yml`, lalu tempel isi `build.yml`.
-2. Buka tab **Actions**. Workflow "Build APK" berjalan otomatis (sekitar 5-8 menit).
-3. Buka run yang selesai, lalu unduh artifact **TAPAK-APK** di bagian Artifacts dan ekstrak untuk mendapat `TAPAK-v1.0.apk`.
-4. Pasang di HP. Aktifkan "Install dari sumber tidak dikenal" bila diminta.
-5. Saat pertama dibuka, izinkan lokasi (pilih "Saat aplikasi digunakan" dan aktifkan lokasi presisi).
-
-Untuk menaikkan versi, ubah nama berkas di langkah "Ganti nama APK" pada `build.yml`.
-
-## 5. Struktur Proyek
+## 4. Struktur Repo
 
 ```
 www/index.html, style.css, app.js   Seluruh aplikasi
@@ -86,21 +75,19 @@ package.json                        Daftar dependensi
 .github/workflows/build.yml         Build APK otomatis
 ```
 
-## 6. Keterbatasan
+## 5. Catatan
 
 **Peta**
-- **Impor GeoPDF** membaca data georeferensi dari berkas PDF lalu menyesuaikannya dengan peta. Hanya **halaman pertama** yang dibaca. PDF yang georeferensinya tersimpan terkompresi, atau PDF biasa tanpa georeferensi, akan ditolak dengan pesan error. Saat ekspor dari ArcMap, centang **"Export Map Georeference Information"**.
-- Penyesuaian peta bersifat pendekatan (affine). Pada peta yang sangat luas bisa ada selisih posisi kecil. Cek posisi GPS pada fitur yang dikenal sebelum dipakai.
+- **Impor GeoPDF** membaca data georeferensi dari PDF lalu menyesuaikannya dengan peta. Hanya **halaman pertama** yang dibaca. PDF yang georeferensinya tersimpan terkompresi, atau PDF biasa tanpa georeferensi, akan ditolak dengan pesan error. Saat ekspor dari ArcMap, centang **"Export Map Georeference Information"**.
+- Pada peta yang sangat luas bisa ada selisih posisi kecil. Cek posisi GPS pada fitur yang dikenal sebelum dipakai.
 - Peta PDF sangat besar dirender dengan resolusi dibatasi, sehingga detail halus bisa berkurang.
-- **Peta online tidak disimpan** untuk offline. Tanpa internet, hanya peta PDF yang tampil. Pemakaian tile OpenStreetMap harus mengikuti kebijakan penggunaannya (tidak untuk lalu lintas berat).
+- **Peta online tidak disimpan** untuk offline. Tanpa internet, hanya peta PDF yang tampil. Pemakaian tile OpenStreetMap harus mengikuti kebijakan penggunaannya.
 
 **Tracking dan GPS**
-- Rekam jejak **hanya berjalan saat aplikasi terbuka dan layar menyala**. Android menghentikan GPS aplikasi web di latar belakang.
 - Fix GPS pertama bisa lama, terutama di dalam bangunan atau di bawah kanopi lebat. Titik dengan akurasi buruk (lebih dari 50 m) tidak dicatat dalam track.
 - Kompas bergantung pada sensor HP dan bisa perlu dikalibrasi. Peta tidak berputar mengikuti arah HP.
 
 **Data dan ekspor**
-- Data tersimpan **hanya di HP**. Tidak ada sinkronisasi atau cadangan otomatis. Menghapus aplikasi atau data aplikasi menghapus semua objek, foto, dan peta PDF. Ekspor secara berkala.
 - Tidak ada fitur impor GeoJSON, KML, atau SHP, dan tidak ada pengeditan titik (vertex) setelah objek disimpan.
 - Foto diperkecil maksimal 1600 px dan disimpan di dalam aplikasi, jadi banyak foto menambah ukuran data.
 - Shapefile membatasi nama atribut maksimal 10 karakter, dan koordinatnya WGS84.
