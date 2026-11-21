@@ -12,6 +12,20 @@ jobs:
       - run: npm install
       - run: node prepare.js
       - run: npx cap add android
+      - name: Tambah izin Android (lokasi, kamera, foto, internet)
+        run: |
+          python3 - <<'PY'
+          p='android/app/src/main/AndroidManifest.xml'
+          s=open(p).read()
+          perms=['INTERNET','ACCESS_NETWORK_STATE','ACCESS_FINE_LOCATION','ACCESS_COARSE_LOCATION','CAMERA','READ_MEDIA_IMAGES']
+          add=''.join(f'    <uses-permission android:name="android.permission.{x}" />\n' for x in perms if f'android.permission.{x}"' not in s)
+          add+='    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />\n'
+          add+='    <uses-feature android:name="android.hardware.camera" android:required="false" />\n'
+          add+='    <uses-feature android:name="android.hardware.location.gps" android:required="false" />\n'
+          s=s.replace('<application',add+'    <application',1)
+          open(p,'w').write(s)
+          PY
+          grep -E "uses-(permission|feature)" android/app/src/main/AndroidManifest.xml
       - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
