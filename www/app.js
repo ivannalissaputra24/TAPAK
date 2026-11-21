@@ -39,7 +39,7 @@ function area(c){let a=0;const R=6378137,r=Math.PI/180;for(let i=0;i<c.length;i+
 function brg(a,b){const r=Math.PI/180,dl=(b[1]-a[1])*r,y=Math.sin(dl)*Math.cos(b[0]*r),x=Math.cos(a[0]*r)*Math.sin(b[0]*r)-Math.sin(a[0]*r)*Math.cos(b[0]*r)*Math.cos(dl);return(Math.atan2(y,x)/r+360)%360}
 const card=d=>['U','TL','T','TG','S','BD','B','BL'][Math.round(d/45)%8];
 // ---------- GPS, kompas, HUD ----------
-let gpsMsg='Mencari GPS… (pastikan di area terbuka)';
+let gpsMsg='Mencari GPS… (pergi ke tempat terbuka)';
 async function startGPS(){const G=C&&C.Plugins&&C.Plugins.Geolocation;
  const cb=p=>{if(!p)return;fix={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,hd:p.coords.heading,sp:p.coords.speed,t:Date.now()};kv.set('last',fix);onFix()};
  if(G&&native){
@@ -74,7 +74,7 @@ function toggleTrack(){const b=$('#bt');
  if(!tracking){tracking=true;tcoords=[];tline=L.polyline([],{color:'#16a34a',weight:4}).addTo(map);b.classList.add('on');toast('Merekam track (jaga layar tetap menyala)')}
  else{tracking=false;b.classList.remove('on');map.removeLayer(tline);if(tcoords.length>1)newF('LineString',tcoords,{name:'Track '+new Date().toLocaleString('id-ID')});else toast('Track terlalu pendek');tcoords=[]}}
 // ---------- menggambar & mengukur ----------
-const sheet=h=>{const s=$('#sheet');s.innerHTML=h;s.hidden=false},closeSheet=()=>{$('#sheet').hidden=true};
+const sheet=h=>{const s=$('#sheet');s.innerHTML='<div class=grab></div><button class=x onclick=closeSheet()>✕</button>'+h;s.hidden=false;s.scrollTop=0},closeSheet=()=>{$('#sheet').hidden=true};
 function startMode(m){closeSheet();mode=m;draft=[];DG.clearLayers();$('#dbar').hidden=false;$('#dinfo').textContent=m=='point'?'Ketuk peta untuk menaruh titik':'Ketuk peta untuk menambah vertex'}
 function measText(){if(draft.length<2)return 'Ketuk peta untuk menambah vertex';
  if(mode=='polygon'||mode=='marea')return draft.length>2?`Luas ${fa(area(draft))} • Keliling ${fd(len([...draft,draft[0]]))}`:`Panjang ${fd(len(draft))}`;return `Panjang ${fd(len(draft))}`}
